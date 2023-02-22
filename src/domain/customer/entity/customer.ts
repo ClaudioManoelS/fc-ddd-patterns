@@ -1,3 +1,6 @@
+import EventBus from "../../@shared/event/event-bus";
+import CustomerAddressChangedEvent from "../event/customer-address-changed.event";
+import CustomerCreatedEvent from "../event/customer-created.event";
 import Address from "../value-object/address";
 
 export default class Customer {
@@ -11,6 +14,7 @@ export default class Customer {
     this._id = id;
     this._name = name;
     this.validate();
+    this.notifyCreateEvent();
   }
 
   get id(): string {
@@ -34,6 +38,11 @@ export default class Customer {
     }
   }
 
+  notifyCreateEvent(){
+    const event = new CustomerCreatedEvent(this);
+    EventBus.getInstance().notify(event)
+  }
+
   changeName(name: string) {
     this._name = name;
     this.validate();
@@ -45,6 +54,12 @@ export default class Customer {
   
   changeAddress(address: Address) {
     this._address = address;
+    this.notifyChangeAddressEvent();
+  }
+
+  notifyChangeAddressEvent(){
+    const event = new CustomerAddressChangedEvent(this);
+    EventBus.getInstance().notify(event)
   }
 
   isActive(): boolean {
